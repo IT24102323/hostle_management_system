@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amber Lodge - Premium Hostel Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--primary)',
+                        secondary: 'var(--secondary)',
+                        accent: 'var(--accent)',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            /* Light Theme (Cozy Day) */
+            --bg-body: #fef7e9;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --primary: #d98c3b;
+            --primary-dark: #b8732e;
+            --secondary: #aa6f3c;
+            --text-main: #4a3b2a;
+            --text-muted: #8c7b6d;
+            --border: #ecd5b0;
+            --shadow: 0 10px 30px -5px rgba(217, 140, 59, 0.15);
+        }
+
+        .dark {
+            /* Dark Theme (Warm Night) */
+            --bg-body: #2b241c;
+            --bg-card: rgba(62, 51, 40, 0.85);
+            --primary: #e8a87b;
+            --primary-dark: #c98f65;
+            --secondary: #c98f65;
+            --text-main: #f2e2cf;
+            --text-muted: #a69585;
+            --border: #655545;
+            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: 0.3s ease;
+        }
+
+        .glass:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(217, 140, 59, 0.25);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .sidebar-item {
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: 0.2s;
+        }
+
+        .sidebar-item.active {
+            background: rgba(217, 140, 59, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .sidebar-item.active::before {
+            transform: scaleY(1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col font-sans">
+
+    <!-- Landing / Login View -->
+    <div id="landing-view" class="fixed inset-0 z-50 overflow-y-auto flex flex-col">
+        <nav class="absolute top-0 w-full p-6 flex justify-between items-center z-10">
+            <div class="font-serif text-2xl font-bold flex items-center gap-2">
+                <i class="fas fa-leaf text-primary"></i> <span>Amber Lodge</span>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="toggleTheme()"
+                    class="w-10 h-10 rounded-full glass flex items-center justify-center text-primary border border-primary"><i
+                        class="fas fa-moon"></i></button>
+                <button onclick="openLoginModal()"
+                    class="px-6 py-2 rounded-full glass font-bold text-primary border border-primary hover:bg-primary hover:text-white transition">Login</button>
+            </div>
+        </nav>
+
+        <div class="flex-1 flex items-center justify-center relative bg-cover bg-center"
+            style="background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');">
+            <div class="absolute inset-0 bg-[#2b241c]/50 dark:bg-[#1a140e]/70 backdrop-blur-[2px]"></div>
+            <div class="relative z-10 text-center max-w-3xl px-6 text-[#fef7e9]">
+                <h1 class="font-serif text-5xl md:text-7xl mb-6">Experience Cozy Luxury</h1>
+                <p class="text-xl md:text-2xl font-light opacity-90 mb-10">A premium sanctuary for students and
+                    professionals. Warmth, comfort, and community in every corner.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="openLoginModal()"
+                        class="btn px-8 py-3 rounded-full text-lg font-semibold shadow-lg shadow-orange-900/40">Portal
+                        Login</button>
+                    <button onclick="scrollToRooms()"
+                        class="bg-white/10 backdrop-blur px-8 py-3 rounded-full text-lg font-semibold hover:bg-white/20 transition border border-white/30">View
+                        Rooms</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Rooms Section -->
+        <div id="rooms-preview" class="py-20 px-6 bg-[var(--bg-body)] text-[var(--text-main)]">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="font-serif text-3xl font-bold text-center mb-12"><span class="text-primary">Curated</span>
+                    Living Spaces</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="landing-rooms">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Layout -->
+    <div id="app" class="hidden h-screen flex relative">
+        <!-- Sidebar -->
+        <aside
+            class="w-20 lg:w-64 glass flex-shrink-0 flex flex-col z-20 transition-all duration-300 border-r-0 lg:border-r">
+            <div class="h-20 flex items-center justify-center lg:justify-start lg:px-6 gap-3 border-b"
+                style="border-color: var(--border)">
+                <i class="fas fa-leaf text-2xl text-primary"></i>
+                <span class="font-serif text-xl font-bold hidden lg:block">Amber Lodge</span>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto py-4 space-y-1" id="sidebar-menu">
+                <!-- Menu Items -->
+            </nav>
+
+            <div class="p-4 border-t" style="border-color: var(--border)">
+                <button onclick="logout()"
+                    class="w-full flex items-center justify-center lg:justify-start gap-3 p-3 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="hidden lg:block">Sign Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden relative">
+            <header class="h-20 glass flex items-center justify-between px-6 z-10 border-b"
+                style="border-color: var(--border)">
+                <div class="flex items-center gap-3">
+                    <button class="lg:hidden text-2xl text-primary"><i class="fas fa-bars"></i></button>
+                    <div>
+                        <h2 id="page-title" class="font-serif text-2xl font-bold">Dashboard</h2>
+                        <span id="date-display" class="text-sm opacity-70"></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()"
+                        class="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-primary transition hover:bg-primary hover:text-white">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="flex items-center gap-3 pl-4 border-l" style="border-color: var(--border)">
+                        <div class="text-right hidden md:block">
+                            <div id="user-name" class="font-bold text-sm"></div>
+                            <div id="user-role" class="text-xs opacity-70 uppercase tracking-wider"></div>
+                        </div>
+                        <img id="user-avatar" src="" class="w-10 h-10 rounded-full border-2 border-primary">
+                    </div>
+                </div>
+            </header>
+
+            <div id="content-area" class="flex-1 overflow-y-auto p-6 lg:p-10 relative">
+                <!-- Dynamic Content -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Shared Modal -->
+    <div id="modal-overlay"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-end sm:items-center justify-center p-4">
+        <div class="glass w-full max-w-lg rounded-2xl transform transition-all scale-95 opacity-0 nav-item"
+            id="modal-content">
+            <div class="p-6 border-b flex justify-between items-center" style="border-color: var(--border)">
+                <h3 id="modal-title" class="font-serif text-xl font-bold">Modal Title</h3>
+                <button onclick="closeModal()"
+                    class="text-2xl opacity-50 hover:opacity-100 hover:text-red-500 transition">&times;</button>
+            </div>
+            <div id="modal-body" class="p-6 max-h-[70vh] overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal"
+        class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass max-w-md w-full p-8 rounded-2xl text-center">
+            <h2 class="font-serif text-3xl font-bold mb-2 text-primary">Welcome Back</h2>
+            <p class="mb-6 opacity-70">Please select your portal access level</p>
+            <div class="space-y-4">
+                <button onclick="login('admin')"
+                    class="w-full btn py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-3">
+                    <i class="fas fa-shield-alt"></i> Administrator
+                </button>
+                <button onclick="login('resident')"
+                    class="w-full bg-white/10 border border-current py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition flex items-center justify-center gap-3">
+                    <i class="fas fa-user-graduate"></i> Resident
+                </button>
+                <button onclick="login('parent')"
+                    class="w-full bg-white/10 border border-current py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition flex items-center justify-center gap-3 text-secondary">
+                    <i class="fas fa-user-friends"></i> Parent / Guardian
+                </button>
+            </div>
+            <button onclick="document.getElementById('login-modal').classList.add('hidden')"
+                class="mt-6 text-sm underline opacity-60 hover:opacity-100">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. State & DB ---
+        const DB_KEY = 'amber_lodge_v1';
+
+        function generateDefaults() {
+            const rooms = [];
+            const types = [
+                { type: 'Single Luxury', price: 45000, img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=500', facilities: ['AC', 'WiFi', 'Attached Bath', 'TV'] },
+                { type: 'Double Shared', price: 25000, img: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=500', facilities: ['WiFi', 'Balcony', 'Study Table'] },
+                { type: 'Dormitory', price: 15000, img: 'https://images.unsplash.com/photo-1522771753062-58877370a271?w=500', facilities: ['WiFi', 'Common Area', 'Lockers'] },
+                { type: 'Garden Suite', price: 50000, img: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=500', facilities: ['AC', 'Private Garden', 'WiFi'] },
+                { type: 'Studio', price: 35000, img: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?w=500', facilities: ['Kitchenette', 'WiFi', 'AC'] }
+            ];
+
+            for (let i = 1; i <= 40; i++) {
+                const t = types[Math.floor(Math.random() * types.length)];
+                const statusNum = Math.random();
+                const status = statusNum > 0.7 ? 'Occupied' : (statusNum > 0.6 ? 'Maintenance' : 'Available');
+
+                // Calculate empty date for occupied rooms (random 1-6 months from now)
+                let emptyDate = null;
+                if (status === 'Occupied') {
+                    const d = new Date();
+                    d.setMonth(d.getMonth() + Math.floor(Math.random() * 6) + 1);
+                    emptyDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                }
+
+                rooms.push({
+                    id: `RM${100 + i}`,
+                    number: `${100 + i}`,
+                    type: t.type,
+                    price: t.price,
+                    facilities: t.facilities,
+                    status: status,
+                    emptyDate: emptyDate,
+                    image: t.img
+                });
+            }
+
+            return {
+                residents: [
+                    { id: '1', name: 'Alice Walker', nic: '987654321V', room: '101', contact: '077-1234567', course: 'Computing', rating: 5, joinDate: '2026-01-15' },
+                    { id: '2', name: 'Bob Martin', nic: '123456789V', room: '102', contact: '071-9876543', course: 'Engineering', rating: 4, joinDate: '2026-02-01' },
+                    { id: '3', name: 'Charlie Davis', nic: '456789123V', room: '105', contact: '075-1122334', course: 'Business', rating: 3, joinDate: '2026-02-10' },
+                    { id: '4', name: 'Diana Prince', nic: '789123456V', room: '110', contact: '070-5566778', course: 'Arts', rating: 5, joinDate: '2026-01-20' }
+                ],
+                rooms: rooms,
+                payments: [
+                    { id: 'P1', residentId: '1', month: 'January', amount: 45000, food: 5000, late: 0, total: 50000, status: 'Paid', date: '2026-01-05' },
+                    { id: 'P2', residentId: '2', month: 'February', amount: 25000, food: 4000, late: 500, total: 29500, status: 'Pending', date: '2026-02-10' }
+                ],
+                attendance: [],
+                complaints: [],
+                cleaning: [
+                    { id: 'C1', area: 'Main Corridor', day: 'Monday', time: '08:00 AM', staff: 'Janitor Joe' },
+                    { id: 'C2', area: 'Bathrooms 1st Fl', day: 'Daily', time: '07:00 AM', staff: 'Cleaning Team' }
+                ],
+                visits: []
+            };
+        }
+
+        function getDB() {
+            let data = JSON.parse(localStorage.getItem(DB_KEY));
+            if (!data || !data.rooms || data.rooms.length < 5) { // Force regenerate if old/empty data
+                data = generateDefaults();
+                saveDB(data);
+            }
+            return data;
+        }
+
+        function saveDB(data) { localStorage.setItem(DB_KEY, JSON.stringify(data)); }
+
+        let currentUser = null; // { role: 'admin' | 'resident', id, name }
+
+        // --- 2. Auth & Theme ---
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function openLoginModal() { document.getElementById('login-modal').classList.remove('hidden'); }
+
+        function login(role) {
+            currentUser = {
+                role,
+                id: role === 'admin' ? 'A1' : (role === 'resident' ? '1' : 'P1'),
+                name: role === 'admin' ? 'Administrator' : (role === 'resident' ? 'Alice Walker' : 'Mrs. Walker'),
+                childId: role === 'parent' ? '1' : null // Link Parent P1 to Child 1 (Alice)
+            };
+
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('landing-view').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+
+            document.getElementById('user-name').textContent = currentUser.name;
+            document.getElementById('user-role').textContent = role;
+            document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${currentUser.name}&background=d98c3b&color=fff`;
+
+            initSidebar();
+            navigate('dashboard');
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('landing-view').classList.remove('hidden');
+        }
+
+        // --- 3. Navigation ---
+        function initSidebar() {
+            const menu = document.getElementById('sidebar-menu');
+            const items = [
+                { id: 'dashboard', icon: 'fa-chart-pie', label: 'Dashboard', roles: ['admin', 'resident', 'parent'] },
+                { id: 'residents', icon: 'fa-users', label: 'Residents', roles: ['admin'] },
+                { id: 'rooms', icon: 'fa-bed', label: 'Rooms', roles: ['admin', 'resident', 'parent'] },
+                { id: 'payments', icon: 'fa-credit-card', label: 'Payments', roles: ['admin', 'resident'] },
+                { id: 'attendance', icon: 'fa-fingerprint', label: 'Attendance', roles: ['admin', 'resident'] },
+                { id: 'complaints', icon: 'fa-bell', label: 'Complaints', roles: ['admin', 'resident'] },
+                { id: 'cleaning', icon: 'fa-broom', label: 'Cleaning', roles: ['admin', 'resident'] },
+                { id: 'visits', icon: 'fa-calendar-alt', label: 'Bookings', roles: ['admin'] }
+            ];
+
+            menu.innerHTML = items
+                .filter(i => i.roles.includes(currentUser.role))
+                .map(i => `
+                    <div onclick="navigate('${i.id}')" id="nav-${i.id}" class="sidebar-item p-4 mx-2 rounded-lg cursor-pointer flex items-center gap-4 text-sm opacity-70 hover:opacity-100 dark:text-white dark:hover:bg-white/10">
+                        <i class="fas ${i.icon} w-6 text-center"></i>
+                        <span class="font-medium">${i.label}</span>
+                    </div>
+                `).join('');
+        }
+
+        function navigate(page) {
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            const nav = document.getElementById(`nav-${page}`);
+            if (nav) nav.classList.add('active');
+
+            document.getElementById('page-title').textContent = page.charAt(0).toUpperCase() + page.slice(1);
+
+            const content = document.getElementById('content-area');
+            content.innerHTML = '<div class="animate-fade">' + getPageContent(page) + '</div>';
+        }
+
+        // --- 4. Page Rendering (CRUD Modules) ---
+        function getPageContent(page) {
+            const db = getDB();
+
+            // --- DASHBOARD ---
+            if (page === 'dashboard') {
+                if (currentUser.role === 'parent') {
+                    const child = db.residents.find(r => r.id === currentUser.childId);
+                    const childRoom = db.rooms.find(r => r.number === child.room);
+                    const lastPayment = db.payments.filter(p => p.residentId === child.id).pop();
+
+                    return `
+                        <div class="animate-fade space-y-6">
+                            <!-- Welcome Header -->
+                            <div class="glass p-8 rounded-2xl flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-serif text-3xl font-bold text-primary mb-1">Welcome, ${currentUser.name}</h3>
+                                    <p class="opacity-70">Viewing details for <span class="font-bold border-b border-primary">${child.name}</span></p>
+                                </div>
+                                <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl"><i class="fas fa-user-graduate"></i></div>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <!-- Child Profile -->
+                                <div class="glass p-6 rounded-2xl animate-slide-up">
+                                    <h4 class="font-bold text-lg mb-4 border-b pb-2" style="border-color: var(--border)">Student Profile</h4>
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <img src="https://ui-avatars.com/api/?name=${child.name}&background=random" class="w-16 h-16 rounded-full border-2 border-[var(--border)]">
+                                        <div>
+                                            <div class="font-bold text-xl">${child.name}</div>
+                                            <div class="text-sm opacity-60">${child.course} Student</div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 text-sm opacity-80">
+                                        <div class="flex justify-between"><span>NIC No:</span> <span class="font-mono">${child.nic}</span></div>
+                                        <div class="flex justify-between"><span>Contact:</span> <span>${child.contact}</span></div>
+                                        <div class="flex justify-between"><span>Joined:</span> <span>${child.joinDate}</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Accommodation Details -->
+                                <div class="glass p-6 rounded-2xl animate-slide-up delay-100">
+                                    <h4 class="font-bold text-lg mb-4 border-b pb-2" style="border-color: var(--border)">Accommodation</h4>
+                                    ${childRoom ? `
+                                        <div class="flex gap-4">
+                                            <div class="w-24 h-24 rounded-lg bg-cover bg-center" style="background-image: url('${childRoom.image}')"></div>
+                                            <div class="flex-1">
+                                                <div class="font-serif font-bold text-xl">Room ${childRoom.number}</div>
+                                                <div class="text-xs uppercase tracking-wider opacity-60 mb-2">${childRoom.type}</div>
+                                                <div class="flex flex-wrap gap-1 mb-2">
+                                                    ${childRoom.facilities.slice(0, 3).map(f => `<span class="text-[10px] bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded">${f}</span>`).join('')}
+                                                </div>
+                                                <div class="font-bold text-primary">Rs. ${(childRoom.price / 1000).toFixed(0)}k <span class="text-xs text-[var(--text-main)] font-normal opacity-50">/ month</span></div>
+                                            </div>
+                                        </div>
+                                    ` : '<div class="opacity-50 text-center py-4">No Room Assigned</div>'}
+                                </div>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <!-- Quick Stats -->
+                                <div class="glass p-6 rounded-2xl animate-slide-up delay-200">
+                                    <h4 class="font-bold text-lg mb-4 border-b pb-2" style="border-color: var(--border)">Overview</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-primary/5 p-4 rounded-xl text-center">
+                                            <div class="text-xs opacity-60 uppercase">Attendance</div>
+                                            <div class="text-2xl font-bold text-primary">92%</div>
+                                            <div class="text-[10px] opacity-50">This Month</div>
+                                        </div>
+                                        <div class="bg-green-500/5 p-4 rounded-xl text-center">
+                                            <div class="text-xs opacity-60 uppercase">Dues</div>
+                                            <div class="text-2xl font-bold ${lastPayment && lastPayment.status === 'Pending' ? 'text-red-500' : 'text-green-500'}">
+                                                ${lastPayment && lastPayment.status === 'Pending' ? 'Pending' : 'Clear'}
+                                            </div>
+                                            <div class="text-[10px] opacity-50">Financial Status</div>
+                                        </div>
+                                    </div>
+                                    <button onclick="navigate('rooms')" class="btn w-full mt-4 py-3 rounded-lg font-bold shadow-lg">View All Rooms</button>
+                                </div>
+
+                                <!-- Recent Activity -->
+                                <div class="glass p-6 rounded-2xl animate-slide-up delay-200">
+                                    <h4 class="font-bold text-lg mb-4 border-b pb-2" style="border-color: var(--border)">Recent Payment</h4>
+                                    ${lastPayment ? `
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <div class="font-bold">${lastPayment.month} Rent</div>
+                                                <div class="text-xs opacity-50">${lastPayment.date}</div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="font-bold text-xl">Rs. ${lastPayment.total}</div>
+                                                <span class="px-2 py-0.5 rounded text-xs font-bold ${lastPayment.status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${lastPayment.status}</span>
+                                            </div>
+                                        </div>
+                                    ` : '<div class="opacity-50">No recent payments.</div>'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                const isAdm = currentUser.role === 'admin';
+                return `
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        ${[
+                        { l: 'Total Residents', v: db.residents.length, i: 'fa-users', c: 'text-blue-500' },
+                        { l: 'Available Rooms', v: db.rooms.filter(r => r.status === 'Available').length, i: 'fa-door-open', c: 'text-green-500' },
+                        { l: 'Pending Dues', v: db.payments.filter(p => p.status === 'Pending').length, i: 'fa-exclamation-circle', c: 'text-orange-500' },
+                        { l: 'Open Complaints', v: db.complaints.filter(c => c.status !== 'Resolved').length, i: 'fa-comment-alt', c: 'text-red-500' }
+                    ].map(s => `
+                            <div class="glass p-6 rounded-2xl flex items-center justify-between">
+                                <div><div class="text-xs font-bold uppercase tracking-wider opacity-60">${s.l}</div><div class="text-3xl font-serif font-bold mt-1">${s.v}</div></div>
+                                <div class="w-12 h-12 rounded-full bg-current/10 flex items-center justify-center ${s.c} text-xl bg-opacity-10"><i class="fas ${s.i}"></i></div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <!-- Recent Activity Section -->
+                     <div class="glass p-8 rounded-2xl">
+                        <h3 class="font-serif text-xl font-bold mb-4">Welcome to Amber Lodge</h3>
+                        <p class="opacity-70">System is fully operational. Manage your hostel operations seamlessly.</p>
+                     </div>
+                `;
+            }
+
+            // --- RESIDENTS ---
+            if (page === 'residents') {
+                return `
+                    <div class="glass p-6 rounded-2xl">
+                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+                            <h3 class="font-serif text-xl font-bold">Resident Directory</h3>
+                            <div class="flex gap-2">
+                                <input type="text" id="search-resident" placeholder="Search by name..." onkeyup="renderResidents()" class="px-4 py-2 rounded-lg bg-white/50 border border-[var(--border)] focus:outline-none focus:border-primary w-full md:w-64">
+                                <button onclick="openForm('resident')" class="btn px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap"><i class="fas fa-plus"></i> Add New</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border" style="border-color: var(--border)">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-primary/5"><tr class="opacity-80 text-sm border-b" style="border-color: var(--border)"><th class="p-4">Profile</th><th>Contact Info</th><th>Room & Course</th><th>Joined</th><th>Actions</th></tr></thead>
+                                <tbody>
+                                    ${db.residents.length ? db.residents.map(r => `
+                                        <tr class="border-b last:border-0 hover:bg-black/5 dark:hover:bg-white/5 transition group" style="border-color: var(--border)">
+                                            <td class="p-4">
+                                                <div class="flex items-center gap-3">
+                                                    <img src="https://ui-avatars.com/api/?name=${r.name}&background=random" class="w-10 h-10 rounded-full border border-[var(--border)]">
+                                                    <div>
+                                                        <div class="font-bold">${r.name}</div>
+                                                        <div class="text-xs opacity-60 flex items-center gap-1"><i class="fas fa-id-card"></i> ${r.nic}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="p-4 text-sm">
+                                                <div class="opacity-80"><i class="fas fa-phone text-xs opacity-50 w-4"></i> ${r.contact}</div>
+                                                <div class="text-xs opacity-50">ID: ${r.id}</div>
+                                            </td>
+                                            <td class="p-4">
+                                                <div class="font-bold text-primary">${r.room}</div>
+                                                <div class="text-xs opacity-60">${r.course}</div>
+                                            </td>
+                                            <td class="p-4 text-sm">
+                                                ${r.joinDate}
+                                                <div class="flex text-yellow-500 text-xs mt-1">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                                            </td>
+                                            <td class="p-4">
+                                                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button onclick="editResident('${r.id}')" class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center transition"><i class="fas fa-edit"></i></button>
+                                                    <button onclick="deleteItem('residents','${r.id}')" class="w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('') : `<tr><td colspan="5" class="p-8 text-center opacity-50">No residents found. Add one to get started.</td></tr>`}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- ROOMS ---
+            if (page === 'rooms') {
+                return `
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                         <div>
+                            <h3 class="font-serif text-2xl font-bold">Heavens Above</h3>
+                            <p class="opacity-60 text-sm">Manage your suites and standard rooms</p>
+                         </div>
+                         <button onclick="openForm('room')" class="btn px-6 py-3 rounded-xl font-bold shadow-lg"><i class="fas fa-plus-circle mr-2"></i> Add New Room</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        ${db.rooms.map(r => `
+                            <div class="glass rounded-2xl overflow-hidden group flex flex-col h-full hover:shadow-2xl transition-all duration-300">
+                                <div class="h-56 bg-cover bg-center relative" style="background-image: url('${r.image}')">
+                                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition"></div>
+                                    <div class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${r.status === 'Available' ? 'bg-green-500 text-white shadow-lg shadow-green-900/40' : 'bg-red-500 text-white shadow-lg shadow-red-900/40'}">${r.status}</div>
+                                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur text-white px-3 py-1 rounded-lg text-xs">
+                                        <i class="fas fa-bed mr-1"></i> ${r.type}
+                                    </div>
+                                </div>
+                                <div class="p-6 flex-1 flex flex-col">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-serif text-2xl font-bold">Room ${r.number}</h3>
+                                        <div class="text-primary font-bold text-xl">Rs. ${(r.price / 1000).toFixed(1)}k</div>
+                                    </div>
+                                    
+                                    <div class="flex gap-2 mb-4 flex-wrap">
+                                        ${r.facilities.map(f => `
+                                            <span class="text-xs bg-primary/10 text-primary border border-primary/20 px-2 py-1 rounded-md flex items-center gap-1">
+                                                <i class="fas fa-check-circle text-[10px]"></i> ${f}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+
+                                    ${r.status === 'Occupied' ? `
+                                        <div class="mb-4 text-xs flex items-center gap-2 opacity-70 p-2 rounded bg-black/5 dark:bg-white/5 mx-[-4px]">
+                                            <i class="fas fa-clock text-primary"></i> 
+                                            <span>Available from: <span class="font-bold">${r.emptyDate || 'TBD'}</span></span>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <div class="mt-auto pt-4 border-t flex gap-2" style="border-color: var(--border)">
+                                        ${currentUser.role === 'admin' ? `
+                                            <button onclick="editRoom('${r.id}')" class="flex-1 py-2 rounded-lg bg-gray-100 dark:bg-white/10 hover:bg-primary hover:text-white transition font-semibold text-sm">Edit Details</button>
+                                            <button onclick="deleteItem('rooms','${r.id}')" class="w-10 h-10 flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
+                                        ` : `
+                                            <button onclick="${r.status === 'Available' ? "toast('Booking Request Sent to Admin', 'success')" : 'toast(\'Please contact admin for waiting list\', \'info\')'}" ${r.status !== 'Available' && currentUser.role !== 'parent' ? 'disabled' : ''} class="w-full py-2 rounded-lg font-bold text-sm transition ${r.status === 'Available' ? 'bg-primary text-white hover:opacity-90 shadow-lg shadow-orange-500/30' : 'bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed'}">
+                                                ${r.status === 'Available' ? 'Book This Suite' : (currentUser.role === 'parent' ? 'Contact Admin' : 'Occupied')}
+                                            </button>
+                                        `}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // --- PAYMENTS ---
+            if (page === 'payments') {
+                const list = currentUser.role === 'admin' ? db.payments : db.payments.filter(p => p.residentId === currentUser.id);
+                return `
+                    <div class="glass p-6 rounded-2xl">
+                         <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+                            <h3 class="font-serif text-xl font-bold">Financial Records</h3>
+                            ${currentUser.role === 'admin' ? `<button onclick="openForm('payment')" class="btn px-4 py-2 rounded-lg text-sm font-bold"><i class="fas fa-plus"></i> New Transaction</button>` : ''}
+                         </div>
+                         <div class="overflow-x-auto">
+                             <table class="w-full text-left">
+                                <thead class="bg-primary/5"><tr class="opacity-60 border-b text-sm" style="border-color: var(--border)"><th class="p-4">Date</th>${currentUser.role === 'admin' ? '<th>Res ID</th>' : ''}<th>Description</th><th>Breakdown</th><th>Total</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody>
+                                    ${list.map(p => `
+                                        <tr class="border-b last:border-0 hover:bg-black/5 dark:hover:bg-white/5 transition" style="border-color: var(--border)">
+                                            <td class="p-4 text-sm">${p.date}</td>
+                                            ${currentUser.role === 'admin' ? `<td class="font-mono text-xs opacity-70">${p.residentId}</td>` : ''}
+                                            <td>
+                                                <div class="font-bold">${p.month} Rent</div>
+                                                <div class="text-xs opacity-50">ID: ${p.id}</div>
+                                            </td>
+                                            <td class="text-xs opacity-70">
+                                                <div>Rent: ${p.amount}</div>
+                                                <div>Food: ${p.food}</div>
+                                                ${p.late > 0 ? `<div class="text-red-500">Late: +${p.late}</div>` : ''}
+                                            </td>
+                                            <td class="font-bold text-lg">Rs. ${p.total}</td>
+                                            <td><span class="px-3 py-1 rounded-full text-xs font-bold ${p.status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">${p.status}</span></td>
+                                            <td><button onclick="toast('Receipt Downloaded', 'success')" class="text-sm underline opacity-70 hover:text-primary"><i class="fas fa-download"></i> Receipt</button></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                             </table>
+                         </div>
+                    </div>
+                `;
+            }
+
+            // --- ATTENDANCE ---
+            if (page === 'attendance') {
+                return `
+                     ${currentUser.role === 'resident' ? `
+                        <div class="glass p-6 rounded-2xl mb-6 flex items-center justify-between">
+                            <div>
+                                <h3 class="font-bold text-lg">Daily Check-In</h3>
+                                <p class="text-sm opacity-70">Mark your presence for ${new Date().toLocaleDateString()}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex gap-2 text-sm">
+                                    <label class="flex items-center gap-1"><input type="checkbox" checked> Breakfast</label>
+                                    <label class="flex items-center gap-1"><input type="checkbox" checked> Dinner</label>
+                                </div>
+                                <button onclick="toast('Checked In Successfully', 'success')" class="btn w-12 h-12 rounded-full flex items-center justify-center text-xl shadow-lg shadow-green-900/20"><i class="fas fa-fingerprint"></i></button>
+                            </div>
+                        </div>
+                     ` : ''}
+
+                     <div class="glass p-6 rounded-2xl">
+                        <h3 class="font-serif text-xl font-bold mb-6">Attendance Log</h3>
+                        <div class="space-y-3">
+                            ${[...Array(5)].map((_, i) => {
+                    const d = new Date(); d.setDate(d.getDate() - i);
+                    return `
+                                    <div class="flex items-center justify-between p-4 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition border border-[var(--border)]">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-check"></i></div>
+                                            <div>
+                                                <div class="font-bold">${d.toLocaleDateString()}</div>
+                                                <div class="text-xs opacity-50">9:00 AM - In Time</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-sm font-bold opacity-80">Present</div>
+                                            <div class="text-xs opacity-50">Breakfast & Dinner</div>
+                                        </div>
+                                    </div>
+                                `;
+                }).join('')}
+                        </div>
+                     </div>
+                `;
+            }
+
+            // --- COMPLAINTS ---
+            if (page === 'complaints') {
+                const list = currentUser.role === 'admin' ? db.complaints : db.complaints.filter(c => c.residentId === currentUser.id);
+                return `
+                    <div class="glass p-6 rounded-2xl mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-serif text-xl font-bold">Maintenance Requests</h3>
+                            ${currentUser.role === 'resident' ? `<button onclick="openForm('complaint')" class="btn px-4 py-2 rounded-lg text-sm">Report Issue</button>` : ''}
+                        </div>
+                        ${list.length ? `
+                            <div class="space-y-4">
+                                ${list.map(c => `
+                                    <div class="p-4 rounded-xl border flex items-center justify-between hover:shadow-md transition" style="border-color: var(--border); background: var(--bg-body)">
+                                        <div>
+                                            <div class="font-bold text-lg">${c.title}</div>
+                                            <div class="text-sm opacity-60">Submitted on ${c.date}</div>
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="px-3 py-1 rounded-full text-xs font-bold ${c.status === 'Resolved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${c.status}</span>
+                                            ${currentUser.role === 'admin' ? `<button class="text-blue-500 text-sm hover:underline">Manage</button>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `<div class="text-center py-8 opacity-50">No active complaints.</div>`}
+                    </div>
+                `;
+            }
+
+            // --- CLEANING ---
+            if (page === 'cleaning') {
+                return `
+                    <div class="glass p-6 rounded-2xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-serif text-xl font-bold">Housekeeping Schedule</h3>
+                            ${currentUser.role === 'admin' ? `<button onclick="openForm('cleaning')" class="btn px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus"></i> Add Task</button>` : ''}
+                        </div>
+                        <div class="grid gap-4">
+                            ${db.cleaning.map(c => `
+                                <div class="p-4 rounded-xl border flex items-center gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition" style="border-color: var(--border)">
+                                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg"><i class="fas fa-broom"></i></div>
+                                    <div class="flex-1">
+                                        <div class="font-bold">${c.area}</div>
+                                        <div class="text-xs opacity-60">${c.day} @ ${c.time}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm font-bold opacity-80">${c.staff}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- VISITS (Admin Only) ---
+            if (page === 'visits') {
+                return `
+                    <div class="glass p-6 rounded-2xl">
+                        <h3 class="font-serif text-xl font-bold mb-6">Booking Inquiries</h3>
+                        <div class="space-y-4">
+                            ${db.visits.length ? db.visits.map(v => `
+                                <div class="p-4 rounded-xl border flex justify-between items-center" style="border-color: var(--border)">
+                                    <div>
+                                        <div class="font-bold">${v.visitorName}</div>
+                                        <div class="text-xs opacity-60">Interested in: ${v.roomType}</div>
+                                        <div class="text-xs mt-1 italic">"${v.msg}"</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-xs mb-1 font-bold ${v.status === 'New' ? 'text-green-500' : 'opacity-50'}">${v.status}</div>
+                                        <button class="btn px-3 py-1 rounded text-xs">Contact</button>
+                                    </div>
+                                </div>
+                            `).join('') : '<div class="text-center opacity-50 py-8">No new booking inquiries.</div>'}
+                        </div>
+                        <div class="mt-8 pt-6 border-t" style="border-color: var(--border)">
+                             <h4 class="font-bold mb-2 text-sm opacity-70">System Controls</h4>
+                             <button onclick="toast('Database Backup Created', 'success')" class="px-4 py-2 rounded border border-[var(--border)] text-sm hover:bg-black/5 dark:hover:bg-white/5"><i class="fas fa-database mr-2"></i> Backup Data</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `<div class="text-center py-20 opacity-50">Module under construction</div>`;
+        }
+
+        // --- 5. Modal & Forms (Mock Logic) ---
+        function openForm(type) {
+            const modal = document.getElementById('modal-overlay');
+            modal.classList.remove('hidden');
+            setTimeout(() => document.getElementById('modal-content').classList.remove('opacity-0', 'scale-95'), 10);
+
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+
+            if (type === 'resident') {
+                title.textContent = 'Add Resident';
+                body.innerHTML = `
+                    <form onsubmit="event.preventDefault(); closeModal(); toast('Saved Successfully', 'success')">
+                        <div class="space-y-4">
+                            <div><label class="text-sm opacity-70">Name</label><input required class="w-full p-3 rounded-lg bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            <div><label class="text-sm opacity-70">Room Number</label><input required class="w-full p-3 rounded-lg bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            <button class="btn w-full py-3 rounded-lg font-bold mt-4">Save Record</button>
+                        </div>
+                    </form>
+                `;
+            } else if (type === 'room') {
+                title.textContent = 'Add Room';
+                body.innerHTML = `
+                    <form onsubmit="event.preventDefault(); closeModal(); toast('Saved Successfully', 'success')">
+                        <div class="space-y-4">
+                            <div><label class="text-sm opacity-70">Room Number</label><input required class="w-full p-3 rounded-lg bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            <div><label class="text-sm opacity-70">Type</label><input required class="w-full p-3 rounded-lg bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            <button class="btn w-full py-3 rounded-lg font-bold mt-4">Save Record</button>
+                        </div>
+                    </form>
+                `;
+            } else if (type === 'payment') {
+                title.textContent = 'Record Payment';
+                body.innerHTML = `
+                    <form onsubmit="handleSave(event, 'payment')">
+                        <div class="space-y-3">
+                            <div><label class="text-xs opacity-70">Resident ID</label><input name="residentId" required class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="text-xs opacity-70">Rent Amount</label><input name="amount" type="number" required class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                                <div><label class="text-xs opacity-70">Food Charges</label><input name="food" type="number" value="0" class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            </div>
+                            <div><label class="text-xs opacity-70">Status</label><select name="status" class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"><option>Paid</option><option>Pending</option></select></div>
+                            <button class="btn w-full py-3 rounded-lg font-bold mt-2">Save Transaction</button>
+                        </div>
+                    </form>`;
+            } else if (type === 'complaint') {
+                title.textContent = 'Submit Complaint';
+                body.innerHTML = `
+                    <form onsubmit="handleSave(event, 'complaint')">
+                        <div class="space-y-3">
+                            <div><label class="text-xs opacity-70">Issue Title</label><input name="title" required placeholder="e.g. Leaking Tap" class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            <div><label class="text-xs opacity-70">Priority</label>
+                                <select name="priority" class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"><option>Low</option><option>Medium</option><option>High</option></select>
+                            </div>
+                            <button class="btn w-full py-3 rounded-lg font-bold mt-2">Submit Report</button>
+                        </div>
+                    </form>`;
+            } else if (type === 'cleaning') {
+                title.textContent = 'Add Cleaning Task';
+                body.innerHTML = `
+                    <form onsubmit="handleSave(event, 'cleaning')">
+                        <div class="space-y-3">
+                            <div><label class="text-xs opacity-70">Area</label><select name="area" class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"><option>Kitchen</option><option>Common Bathrooms</option><option>Corridors</option><option>Garden</option></select></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="text-xs opacity-70">Day</label><input name="day" placeholder="e.g. Monday" required class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                                <div><label class="text-xs opacity-70">Time</label><input name="time" type="time" required class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            </div>
+                            <div><label class="text-xs opacity-70">Assigned Staff</label><input name="staff" required class="w-full p-2 rounded bg-black/5 dark:bg-white/5 border border-[var(--border)]"></div>
+                            <button class="btn w-full py-3 rounded-lg font-bold mt-2">Schedule Task</button>
+                        </div>
+                    </form>`;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-content').classList.add('opacity-0', 'scale-95');
+            setTimeout(() => document.getElementById('modal-overlay').classList.add('hidden'), 200);
+        }
+
+        function editResident(id) {
+            const r = getDB().residents.find(x => x.id === id);
+            if (r) {
+                const newName = prompt("Edit Name:", r.name);
+                if (newName) {
+                    const db = getDB();
+                    db.residents.find(x => x.id === id).name = newName;
+                    saveDB(db);
+                    renderResidents(); // or navigate('residents')
+                    toast('Resident Updated', 'success');
+                }
+            }
+        }
+
+        function editRoom(id) {
+            const r = getDB().rooms.find(x => x.id === id);
+            if (r) {
+                const newPrice = prompt("Edit Price (LKR):", r.price);
+                if (newPrice) {
+                    const db = getDB();
+                    db.rooms.find(x => x.id === id).price = newPrice;
+                    saveDB(db);
+                    navigate('rooms');
+                    toast('Price Updated', 'success');
+                }
+            }
+        }
+
+        function deleteItem(col, id) {
+            if (confirm('Are you sure you want to remove this record?')) {
+                const db = getDB();
+                db[col] = db[col].filter(i => i.id !== id);
+                saveDB(db);
+                navigate(document.querySelector('.sidebar-item.active').id.replace('nav-', ''));
+                toast('Record Deleted', 'success');
+            }
+        }
+
+        function toast(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `fixed bottom-6 right-6 px-6 py-3 rounded-xl shadow-2xl text-white transform translate-y-10 opacity-0 transition duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-gray-800'}`;
+            div.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i> ${msg}`;
+            document.body.appendChild(div);
+            setTimeout(() => div.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => { div.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => div.remove(), 300) }, 3000);
+        }
+
+        function scrollToRooms() { document.getElementById('landing-rooms').scrollIntoView({ behavior: 'smooth' }); }
+
+        // --- Init Landing Data ---
+        document.getElementById('landing-rooms').innerHTML = getDB().rooms.slice(0, 3).map(r => `
+            <div class="glass rounded-2xl overflow-hidden hover:shadow-2xl transition duration-500 group cursor-pointer">
+                <div class="h-64 bg-cover bg-center group-hover:scale-110 transition duration-700" style="background-image: url('${r.image}')"></div>
+                <div class="p-8 relative bg-[var(--bg-card)]">
+                    <h3 class="font-serif text-2xl font-bold mb-2">${r.type}</h3>
+                    <p class="opacity-70 mb-4">Starting at <span class="text-primary font-bold">Rs. ${r.price}</span> / month</p>
+                    <div class="flex flex-wrap gap-2">
+                        ${r.facilities.map(f => `<span class="text-xs uppercase tracking-wider border border-[var(--border)] px-3 py-1 rounded-full">${f}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    </script>
+</body>
+
+</html>
