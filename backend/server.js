@@ -18,10 +18,10 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hostel_ma
     .then(() => console.log('✅ MongoDB connected successfully'))
     .catch((err) => console.error('❌ MongoDB connection error:', err));
 
-// Routes (will be added in Phase 2 & 3)
-// const complaintRoutes = require('./routes/complaints');
+// Routes
+const complaintRoutes = require('./routes/complaints');
 // const maintenanceRoutes = require('./routes/maintenance');
-// app.use('/api/complaints', complaintRoutes);
+app.use('/api/complaints', complaintRoutes);
 // app.use('/api/maintenance', maintenanceRoutes);
 
 // Base route
