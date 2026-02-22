@@ -121,8 +121,108 @@ const getComplaintById = async (req, res) => {
     }
 };
 
+// @desc    Update complaint status
+// @route   PUT /api/complaints/:id
+// @access  Public
+const updateComplaint = async (req, res) => {
+    try {
+        const { status, priority, response } = req.body;
+
+        // At least one field must be provided
+        if (!status && !priority && !response) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide at least one field to update: status, priority, or response',
+            });
+        }
+
+        const updateFields = {};
+        if (status) updateFields.status = status;
+        if (priority) updateFields.priority = priority;
+        if (response) updateFields.response = response;
+
+        const complaint = await Complaint.findByIdAndUpdate(
+            req.params.id,
+            updateFields,
+            { new: true, runValidators: true }
+        );
+
+        if (!complaint) {
+            return res.status(404).json({
+                success: false,
+                message: 'Complaint not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Complaint updated successfully',
+            data: complaint,
+        });
+    } catch (error) {
+        if (error.kind === 'ObjectId' || error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid complaint ID format',
+            });
+        }
+
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map((err) => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation failed',
+                errors: messages,
+            });
+        }
+
+        console.error('Error updating complaint:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error. Could not update complaint.',
+        });
+    }
+};
+
+// @desc    Delete a complaint
+// @route   DELETE /api/complaints/:id
+// @access  Public
+const deleteComplaint = async (req, res) => {
+    try {
+        const complaint = await Complaint.findByIdAndDelete(req.params.id);
+
+        if (!complaint) {
+            return res.status(404).json({
+                success: false,
+                message: 'Complaint not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Complaint deleted successfully',
+            data: complaint,
+        });
+    } catch (error) {
+        if (error.kind === 'ObjectId' || error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid complaint ID format',
+            });
+        }
+
+        console.error('Error deleting complaint:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error. Could not delete complaint.',
+        });
+    }
+};
+
 module.exports = {
     createComplaint,
     getAllComplaints,
     getComplaintById,
+    updateComplaint,
+    deleteComplaint,
 };
