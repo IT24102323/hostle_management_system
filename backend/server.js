@@ -20,9 +20,9 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hostel_ma
 
 // Routes
 const complaintRoutes = require('./routes/complaints');
-// const maintenanceRoutes = require('./routes/maintenance');
+const maintenanceRoutes = require('./routes/maintenance');
 app.use('/api/complaints', complaintRoutes);
-// app.use('/api/maintenance', maintenanceRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
 
 // Base route
 app.get('/', (req, res) => {
