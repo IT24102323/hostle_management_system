@@ -1,19 +1,13 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import ComplaintForm from './components/ComplaintForm'
+import ComplaintList from './components/ComplaintList'
 
 // Placeholder page components (will be built later)
 const Dashboard = () => (
   <div>
     <h2>Dashboard</h2>
     <p>Complaint & Maintenance Management Dashboard — Coming Soon</p>
-  </div>
-)
-
-const ComplaintList = () => (
-  <div>
-    <h2>All Complaints</h2>
-    <p>Complaint list with status badges — Coming Soon</p>
   </div>
 )
 

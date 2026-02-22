@@ -118,7 +118,7 @@ function ComplaintForm() {
                                 name="studentName"
                                 value={formData.studentName}
                                 onChange={handleChange}
-                                placeholder="e.g. John Doe"
+                                placeholder="e.g. Kasuni Sudarshana"
                                 required
                             />
                         </div>
