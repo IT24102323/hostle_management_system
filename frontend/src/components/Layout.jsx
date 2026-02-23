@@ -22,7 +22,7 @@ function Layout({ children }) {
                         <NavLink
                             key={item.path}
                             to={item.path}
-                            end={item.path === '/'}
+                            end
                             className={({ isActive }) =>
                                 `nav-link ${isActive ? 'active' : ''}`
                             }

@@ -14,28 +14,28 @@ const Dashboard = () => (
 const ComplaintDetail = () => (
   <div>
     <h2>Complaint Detail</h2>
-    <p>View and update complaint status — Coming in Phase 4</p>
+    <p>Update soon</p>
   </div>
 )
 
 const MaintenanceList = () => (
   <div>
     <h2>Maintenance Requests</h2>
-    <p>Maintenance request list with filters — Coming in Phase 5</p>
+    <p>update soon</p>
   </div>
 )
 
 const MaintenanceForm = () => (
   <div>
     <h2>Submit Maintenance Request</h2>
-    <p>Maintenance request form — Coming in Phase 5</p>
+    <p>Upcoming fixing</p>
   </div>
 )
 
 const MaintenanceDetail = () => (
   <div>
     <h2>Maintenance Request Detail</h2>
-    <p>View and update maintenance request — Coming in Phase 5</p>
+    <p>update soon</p>
   </div>
 )
 
