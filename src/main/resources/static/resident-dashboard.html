@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Portal - HostelHub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --light: #f1f5f9;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #06b6d4 100%);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--gradient);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 26px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 500;
+            opacity: 0.9;
+            padding-left: 20px;
+            border-left: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .refresh-btn {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .refresh-btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Last Updated */
+        .last-updated {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-text h1 {
+            font-size: 28px;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .welcome-text p {
+            color: var(--gray);
+            font-size: 15px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .stat-icon.purple {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-icon.pink {
+            background: rgba(236, 72, 153, 0.1);
+            color: var(--secondary);
+        }
+
+        .stat-icon.cyan {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent);
+        }
+
+        .stat-icon.green {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-info {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent);
+        }
+
+        .badge-primary {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--light);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--light);
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        tr:hover {
+            background: rgba(99, 102, 241, 0.02);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            opacity: 0.3;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        /* Payment Card Highlight */
+        .payment-pending {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(239, 68, 68, 0.05) 100%);
+            border: 2px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .payment-action {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: var(--white);
+            color: var(--dark);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .alert {
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Payment Summary */
+        .payment-summary {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .payment-summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .payment-summary-row.total {
+            border-top: 2px solid var(--gray-light);
+            margin-top: 10px;
+            padding-top: 15px;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--dark);
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .payment-method i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .payment-method-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .welcome-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .quick-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <a href="index.html" class="logo">
+                <i class="fas fa-building"></i>
+                <span>HostelHub</span>
+            </a>
+            <span class="page-title">Resident Portal</span>
+        </div>
+        <div class="top-bar-right">
+            <div class="last-updated">
+                <i class="fas fa-clock"></i>
+                <span id="lastUpdated">--</span>
+            </div>
+            <button class="refresh-btn" onclick="refreshData()" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i>
+                Refresh
+            </button>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <div class="user-name" id="userName">Resident</div>
+                    <div class="user-role">Resident</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <div class="welcome-text">
+                <h1>Welcome back, <span id="welcomeName">Resident</span>! 👋</h1>
+                <p>Here's an overview of your hostel stay and important updates.</p>
+            </div>
+            <div class="quick-actions">
+                <button class="btn btn-success" onclick="openPaymentModal()">
+                    <i class="fas fa-credit-card"></i>
+                    Make Payment
+                </button>
+                <button class="btn btn-primary" onclick="openComplaintModal()">
+                    <i class="fas fa-plus"></i>
+                    New Complaint
+                </button>
+                <a href="index.html" class="btn btn-outline">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="roomNumber">--</div>
+                <div class="stat-label">Your Room</div>
+            </div>
+            <div class="stat-card" id="pendingPaymentCard">
+                <div class="stat-header">
+                    <div class="stat-icon pink">
+                        <i class="fas fa-money-bill"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="pendingAmount">Rs. 0</div>
+                <div class="stat-label">Pending Payment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon cyan">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="openComplaints">0</div>
+                <div class="stat-label">Open Complaints</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon green">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="stayDuration">--</div>
+                <div class="stat-label">Months Stay</div>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Profile Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-user-circle"></i>
+                        Profile Information
+                    </h3>
+                    <span class="badge badge-primary" id="profileStatus">Loading...</span>
+                </div>
+                <div id="profileInfo" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            </div>
+
+            <!-- Room Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-bed"></i>
+                        Room Details
+                    </h3>
+                </div>
+                <div id="roomInfo" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Section -->
+        <div class="card" style="margin-bottom: 25px;">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-receipt"></i>
+                    Payment History
+                </h3>
+                <button class="btn btn-success btn-sm" onclick="openPaymentModal()">
+                    <i class="fas fa-plus"></i>
+                    Pay Now
+                </button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchPaymentTab('all')">All Payments</button>
+                <button class="tab" onclick="switchPaymentTab('pending')">Pending</button>
+                <button class="tab" onclick="switchPaymentTab('paid')">Paid</button>
+            </div>
+
+            <div class="table-container" id="paymentHistory">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance & Food Section -->
+        <div class="content-grid">
+            <!-- Today's Attendance -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-clipboard-check"></i>
+                        My Attendance
+                    </h3>
+                    <button class="btn btn-success btn-sm" onclick="markMyAttendance('PRESENT')">
+                        <i class="fas fa-check"></i> Check In
+                    </button>
+                </div>
+                <div id="attendanceStatus">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+                <div id="attendanceHistory" style="margin-top: 15px;">
+                </div>
+            </div>
+
+            <!-- Food Preference -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-utensils"></i>
+                        Food Preference
+                    </h3>
+                    <button class="btn btn-primary btn-sm" onclick="openFoodPreferenceModal()">
+                        <i class="fas fa-edit"></i> Update
+                    </button>
+                </div>
+                <div id="foodPreferenceStatus">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaints Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    My Complaints
+                </h3>
+                <button class="btn btn-primary btn-sm" onclick="openComplaintModal()">
+                    <i class="fas fa-plus"></i>
+                    Submit Complaint
+                </button>
+            </div>
+            <div class="table-container" id="complaintHistory">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Make a Payment</h3>
+                <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div id="paymentAlert" class="alert"></div>
+
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label>Select Payment *</label>
+                    <select id="paymentSelect" required onchange="updatePaymentSummary()">
+                        <option value="">Select pending payment...</option>
+                    </select>
+                </div>
+
+                <div class="payment-summary" id="paymentSummarySection" style="display: none;">
+                    <div class="payment-summary-row">
+                        <span>Room Rent</span>
+                        <span id="summaryRent">Rs. 0</span>
+                    </div>
+                    <div class="payment-summary-row">
+                        <span>Food Charge</span>
+                        <span id="summaryFood">Rs. 0</span>
+                    </div>
+                    <div class="payment-summary-row">
+                        <span>Late Fee</span>
+                        <span id="summaryLate">Rs. 0</span>
+                    </div>
+                    <div class="payment-summary-row total">
+                        <span>Total Amount</span>
+                        <span id="summaryTotal">Rs. 0</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Method *</label>
+                    <div class="payment-methods" id="paymentMethods">
+                        <div class="payment-method selected" data-method="CASH" onclick="selectPaymentMethod(this)">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span class="payment-method-name">Cash</span>
+                        </div>
+                        <div class="payment-method" data-method="BANK_TRANSFER" onclick="selectPaymentMethod(this)">
+                            <i class="fas fa-university"></i>
+                            <span class="payment-method-name">Bank Transfer</span>
+                        </div>
+                        <div class="payment-method" data-method="VISA" onclick="selectPaymentMethod(this)">
+                            <i class="fab fa-cc-visa"></i>
+                            <span class="payment-method-name">Visa Card</span>
+                        </div>
+                        <div class="payment-method" data-method="CREDIT_CARD" onclick="selectPaymentMethod(this)">
+                            <i class="fas fa-credit-card"></i>
+                            <span class="payment-method-name">Credit Card</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedPaymentMethod" value="CASH">
+                </div>
+
+                <div class="form-group" id="cardDetailsSection" style="display: none;">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    <div class="form-row" style="margin-top: 10px;">
+                        <div>
+                            <label>Expiry</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div>
+                            <label>CVV</label>
+                            <input type="password" id="cardCvv" placeholder="***" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success" style="width: 100%;" id="payBtn">
+                    <i class="fas fa-check-circle"></i>
+                    Confirm Payment
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Complaint Modal -->
+    <div class="modal-overlay" id="complaintModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Submit a Complaint</h3>
+                <button class="modal-close" onclick="closeComplaintModal()">&times;</button>
+            </div>
+            <div id="complaintAlert" class="alert"></div>
+            <form id="complaintForm">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="complaintTitle" placeholder="Brief description of the issue" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="complaintCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Cleaning">Cleaning</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Plumbing">Plumbing</option>
+                            <option value="Food">Food</option>
+                            <option value="Security">Security</option>
+                            <option value="Noise">Noise</option>
+                            <option value="Internet">Internet/WiFi</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority *</label>
+                        <select id="complaintPriority" required>
+                            <option value="LOW">Low</option>
+                            <option value="MEDIUM" selected>Medium</option>
+                            <option value="HIGH">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea id="complaintDescription" rows="4" placeholder="Describe your issue in detail..."
+                        required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-paper-plane"></i>
+                    Submit Complaint
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Food Preference Modal -->
+    <div class="modal-overlay" id="foodModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Update Food Preference</h3>
+                <button class="modal-close" onclick="closeFoodPreferenceModal()">&times;</button>
+            </div>
+            <div id="foodAlert" class="alert"></div>
+            <form id="foodForm">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="foodDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Meal Type *</label>
+                    <select id="mealType" required>
+                        <option value="VEG">Vegetarian</option>
+                        <option value="NON_VEG">Non-Vegetarian</option>
+                        <option value="VEGAN">Vegan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Select Meals</label>
+                    <div style="display: flex; gap: 20px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="breakfast" checked style="width: 18px; height: 18px;">
+                            <span>Breakfast</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="lunch" checked style="width: 18px; height: 18px;">
+                            <span>Lunch</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="dinner" checked style="width: 18px; height: 18px;">
+                            <span>Dinner</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Special Requirements</label>
+                    <textarea id="specialRequirements" rows="2"
+                        placeholder="Any allergies, dietary restrictions, etc."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-save"></i>
+                    Save Preferences
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Action completed successfully!</span>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let currentResident = null;
+        let allPayments = [];
+        let pendingPayments = [];
+        let currentPaymentTab = 'all';
+
+        // Check authentication
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.loggedIn) {
+            window.location.href = 'login.html';
+        }
+        if (user && user.role === 'admin') {
+            window.location.href = 'dashboard.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update last updated time
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleTimeString();
+        }
+
+        // Refresh data
+        async function refreshData() {
+            const btn = document.getElementById('refreshBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            await loadResidentData();
+            updateLastUpdatedTime();
+
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            showToast('Data refreshed successfully!');
+        }
+
+        // Modal functions
+        function openPaymentModal() {
+            document.getElementById('paymentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            populatePendingPayments();
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('paymentForm').reset();
+            document.getElementById('paymentSummarySection').style.display = 'none';
+            document.getElementById('cardDetailsSection').style.display = 'none';
+        }
+
+        function openComplaintModal() {
+            document.getElementById('complaintModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeComplaintModal() {
+            document.getElementById('complaintModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('complaintForm').reset();
+        }
+
+        // Payment method selection
+        function selectPaymentMethod(element) {
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+            element.classList.add('selected');
+            const method = element.dataset.method;
+            document.getElementById('selectedPaymentMethod').value = method;
+
+            // Show card details for card payments
+            const cardSection = document.getElementById('cardDetailsSection');
+            if (method === 'VISA' || method === 'CREDIT_CARD') {
+                cardSection.style.display = 'block';
+            } else {
+                cardSection.style.display = 'none';
+            }
+        }
+
+        // Populate pending payments dropdown
+        function populatePendingPayments() {
+            const select = document.getElementById('paymentSelect');
+            select.innerHTML = '<option value="">Select pending payment...</option>';
+
+            pendingPayments.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id;
+                option.textContent = `${p.month} - Rs. ${(p.total || p.amount || 0).toLocaleString()}`;
+                option.dataset.payment = JSON.stringify(p);
+                select.appendChild(option);
+            });
+
+            // If no pending payments, add a message
+            if (pendingPayments.length === 0) {
+                select.innerHTML = '<option value="">No pending payments</option>';
+            }
+        }
+
+        // Update payment summary
+        function updatePaymentSummary() {
+            const select = document.getElementById('paymentSelect');
+            const summarySection = document.getElementById('paymentSummarySection');
+
+            if (select.value) {
+                const selectedOption = select.options[select.selectedIndex];
+                const payment = JSON.parse(selectedOption.dataset.payment);
+
+                document.getElementById('summaryRent').textContent = `Rs. ${(payment.amount || 0).toLocaleString()}`;
+                document.getElementById('summaryFood').textContent = `Rs. ${(payment.foodCharge || 0).toLocaleString()}`;
+                document.getElementById('summaryLate').textContent = `Rs. ${(payment.lateFee || 0).toLocaleString()}`;
+                document.getElementById('summaryTotal').textContent = `Rs. ${(payment.total || payment.amount || 0).toLocaleString()}`;
+
+                summarySection.style.display = 'block';
+            } else {
+                summarySection.style.display = 'none';
+            }
+        }
+
+        // Switch payment tabs
+        function switchPaymentTab(tab) {
+            currentPaymentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderPayments();
+        }
+
+        // Load resident data
+        async function loadResidentData() {
+            try {
+                const residentsRes = await fetch(`${API_BASE}/residents`);
+                const residentsData = await residentsRes.json();
+
+                if (residentsData.success && residentsData.data && residentsData.data.length > 0) {
+                    // Find the logged-in resident
+                    let resident = null;
+
+                    if (user.residentId) {
+                        resident = residentsData.data.find(r => r.id === user.residentId);
+                    }
+                    if (!resident && user.email) {
+                        resident = residentsData.data.find(r =>
+                            r.email && r.email.toLowerCase() === user.email.toLowerCase()
+                        );
+                    }
+                    if (!resident && user.name && user.name !== 'Demo Resident') {
+                        resident = residentsData.data.find(r =>
+                            r.name && r.name.toLowerCase() === user.name.toLowerCase()
+                        );
+                    }
+                    // Fallback to first resident for demo
+                    if (!resident) {
+                        resident = residentsData.data[0];
+                    }
+
+                    currentResident = resident;
+
+                    // Update user name displays
+                    document.getElementById('userName').textContent = resident.name;
+                    document.getElementById('welcomeName').textContent = resident.name.split(' ')[0];
+
+                    // Update stats
+                    document.getElementById('roomNumber').textContent = resident.roomNumber || 'N/A';
+                    document.getElementById('profileStatus').textContent = resident.status || 'ACTIVE';
+                    document.getElementById('profileStatus').className = `badge badge-${getStatusColor(resident.status)}`;
+
+                    // Calculate stay duration
+                    if (resident.joinDate) {
+                        const joinDate = new Date(resident.joinDate);
+                        const now = new Date();
+                        const months = Math.max(1, Math.floor((now - joinDate) / (30 * 24 * 60 * 60 * 1000)));
+                        document.getElementById('stayDuration').textContent = months;
+                    } else {
+                        document.getElementById('stayDuration').textContent = '1';
+                    }
+
+                    // Display profile
+                    document.getElementById('profileInfo').innerHTML = `
+                        <div class="info-row">
+                            <span class="info-label">Full Name</span>
+                            <span class="info-value">${resident.name}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">NIC</span>
+                            <span class="info-value">${resident.nic || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Contact</span>
+                            <span class="info-value">${resident.contact || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">${resident.email || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Course/Occupation</span>
+                            <span class="info-value">${resident.course || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Join Date</span>
+                            <span class="info-value">${resident.joinDate || 'N/A'}</span>
+                        </div>
+                    `;
+
+                    // Display room info
+                    if (resident.roomNumber) {
+                        // Try to get room details
+                        try {
+                            const roomsRes = await fetch(`${API_BASE}/rooms`);
+                            const roomsData = await roomsRes.json();
+                            const room = roomsData.data?.find(r => r.roomNumber === resident.roomNumber);
+
+                            document.getElementById('roomInfo').innerHTML = `
+                                <div class="info-row">
+                                    <span class="info-label">Room Number</span>
+                                    <span class="info-value">${resident.roomNumber}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Room Type</span>
+                                    <span class="info-value">${room?.type || resident.roomType || 'Standard'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Floor</span>
+                                    <span class="info-value">${room?.floor || Math.floor(parseInt(resident.roomNumber) / 100) || '1'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Monthly Rent</span>
+                                    <span class="info-value">Rs. ${(room?.price || 15000).toLocaleString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Capacity</span>
+                                    <span class="info-value">${room?.capacity || 2} Person(s)</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Amenities</span>
+                                    <span class="info-value">${room?.amenities || 'WiFi, AC, Attached Bath'}</span>
+                                </div>
+                            `;
+                        } catch {
+                            document.getElementById('roomInfo').innerHTML = `
+                                <div class="info-row">
+                                    <span class="info-label">Room Number</span>
+                                    <span class="info-value">${resident.roomNumber}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Room Type</span>
+                                    <span class="info-value">${resident.roomType || 'Standard'}</span>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        document.getElementById('roomInfo').innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-door-closed"></i>
+                                <p>No room assigned yet</p>
+                                <p style="font-size: 12px; margin-top: 10px;">Contact admin to get a room assigned</p>
+                            </div>
+                        `;
+                    }
+
+                    // Load payments
+                    await loadPayments();
+
+                    // Load complaints
+                    await loadComplaints();
+
+                    // Load attendance
+                    await loadMyAttendance();
+
+                    // Load food preferences
+                    await loadMyFoodPreference();
+
+                    // Update last updated time
+                    updateLastUpdatedTime();
+                } else {
+                    // No residents found - show empty state
+                    document.getElementById('profileInfo').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-user-slash"></i>
+                            <p>Profile not found</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading resident data:', error);
+                document.getElementById('profileInfo').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading data. Please refresh.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load payments
+        async function loadPayments() {
+            try {
+                const paymentsRes = await fetch(`${API_BASE}/payments`);
+                const paymentsData = await paymentsRes.json();
+
+                allPayments = paymentsData.data || [];
+
+                // Filter payments for current resident if possible
+                if (currentResident && currentResident.id) {
+                    const residentPayments = allPayments.filter(p =>
+                        p.residentId === currentResident.id ||
+                        p.residentName === currentResident.name
+                    );
+                    // If we have resident-specific payments, use them; otherwise show all
+                    if (residentPayments.length > 0) {
+                        allPayments = residentPayments;
+                    }
+                }
+
+                pendingPayments = allPayments.filter(p => p.status === 'PENDING');
+
+                // Calculate pending total
+                let pendingTotal = 0;
+                pendingPayments.forEach(p => {
+                    pendingTotal += p.total || p.amount || 0;
+                });
+
+                document.getElementById('pendingAmount').textContent = `Rs. ${pendingTotal.toLocaleString()}`;
+
+                // Highlight pending payment card if there are pending payments
+                const pendingCard = document.getElementById('pendingPaymentCard');
+                if (pendingTotal > 0) {
+                    pendingCard.classList.add('payment-pending');
+                } else {
+                    pendingCard.classList.remove('payment-pending');
+                }
+
+                renderPayments();
+            } catch (error) {
+                console.error('Error loading payments:', error);
+                document.getElementById('paymentHistory').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading payments</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render payments based on current tab
+        function renderPayments() {
+            let payments = allPayments;
+
+            if (currentPaymentTab === 'pending') {
+                payments = allPayments.filter(p => p.status === 'PENDING');
+            } else if (currentPaymentTab === 'paid') {
+                payments = allPayments.filter(p => p.status === 'PAID');
+            }
+
+            if (payments.length > 0) {
+                document.getElementById('paymentHistory').innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Room Rent</th>
+                                <th>Food</th>
+                                <th>Late Fee</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${payments.map(p => `
+                                <tr>
+                                    <td><strong>${p.month || 'N/A'}</strong></td>
+                                    <td>Rs. ${(p.amount || 0).toLocaleString()}</td>
+                                    <td>Rs. ${(p.foodCharge || 0).toLocaleString()}</td>
+                                    <td>Rs. ${(p.lateFee || 0).toLocaleString()}</td>
+                                    <td><strong>Rs. ${(p.total || p.amount || 0).toLocaleString()}</strong></td>
+                                    <td><span class="badge badge-${getPaymentStatusColor(p.status)}">${p.status}</span></td>
+                                    <td class="payment-action">
+                                        ${p.status === 'PENDING' ?
+                        `<button class="btn btn-success btn-sm" onclick="payNow(${p.id})">
+                                                <i class="fas fa-credit-card"></i> Pay
+                                            </button>` :
+                        `<span style="color: var(--success); font-size: 12px;">
+                                                <i class="fas fa-check"></i> ${p.method || 'Paid'}
+                                            </span>`
+                    }
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                document.getElementById('paymentHistory').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>No ${currentPaymentTab === 'all' ? '' : currentPaymentTab} payment records found</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Pay now - quick pay for specific payment
+        function payNow(paymentId) {
+            openPaymentModal();
+            setTimeout(() => {
+                document.getElementById('paymentSelect').value = paymentId;
+                updatePaymentSummary();
+            }, 100);
+        }
+
+        // Load complaints
+        async function loadComplaints() {
+            try {
+                const complaintsRes = await fetch(`${API_BASE}/complaints`);
+                const complaintsData = await complaintsRes.json();
+
+                let complaints = complaintsData.data || [];
+
+                // Filter complaints for current resident if possible
+                if (currentResident && currentResident.id) {
+                    const residentComplaints = complaints.filter(c =>
+                        c.residentId === currentResident.id ||
+                        c.residentName === currentResident.name
+                    );
+                    if (residentComplaints.length > 0) {
+                        complaints = residentComplaints;
+                    }
+                }
+
+                const openCount = complaints.filter(c => c.status !== 'RESOLVED').length;
+                document.getElementById('openComplaints').textContent = openCount;
+
+                if (complaints.length > 0) {
+                    document.getElementById('complaintHistory').innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Response</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${complaints.map(c => `
+                                    <tr>
+                                        <td>
+                                            <strong>${c.title}</strong>
+                                            <div style="font-size: 12px; color: var(--gray); margin-top: 4px;">
+                                                ${(c.description || '').substring(0, 50)}${c.description?.length > 50 ? '...' : ''}
+                                            </div>
+                                        </td>
+                                        <td><span class="badge badge-info">${c.category || 'General'}</span></td>
+                                        <td><span class="badge badge-${getPriorityColor(c.priority)}">${c.priority}</span></td>
+                                        <td><span class="badge badge-${getComplaintStatusColor(c.status)}">${c.status}</span></td>
+                                        <td>${c.complaintDate || 'N/A'}</td>
+                                        <td style="font-size: 12px; max-width: 150px;">
+                                            ${c.response || '<span style="color: var(--gray);">Awaiting response...</span>'}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    document.getElementById('complaintHistory').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No complaints submitted</p>
+                            <p style="font-size: 12px; margin-top: 10px;">Have an issue? Click "Submit Complaint" above.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading complaints:', error);
+                document.getElementById('complaintHistory').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading complaints</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Submit payment
+        document.getElementById('paymentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const paymentId = document.getElementById('paymentSelect').value;
+            const method = document.getElementById('selectedPaymentMethod').value;
+
+            if (!paymentId) {
+                showModalAlert('paymentAlert', 'Please select a payment', 'error');
+                return;
+            }
+
+            // For card payments, validate card details
+            if (method === 'VISA' || method === 'CREDIT_CARD') {
+                const cardNumber = document.getElementById('cardNumber').value;
+                const cardExpiry = document.getElementById('cardExpiry').value;
+                const cardCvv = document.getElementById('cardCvv').value;
+
+                if (!cardNumber || cardNumber.length < 16) {
+                    showModalAlert('paymentAlert', 'Please enter a valid card number', 'error');
+                    return;
+                }
+                if (!cardExpiry || !cardExpiry.includes('/')) {
+                    showModalAlert('paymentAlert', 'Please enter a valid expiry date', 'error');
+                    return;
+                }
+                if (!cardCvv || cardCvv.length < 3) {
+                    showModalAlert('paymentAlert', 'Please enter a valid CVV', 'error');
+                    return;
+                }
+            }
+
+            const payBtn = document.getElementById('payBtn');
+            payBtn.disabled = true;
+            payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                // Find the payment details
+                const payment = pendingPayments.find(p => p.id == paymentId);
+
+                // Update payment status
+                const response = await fetch(`${API_BASE}/payments/${paymentId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...payment,
+                        status: 'PAID',
+                        method: method,
+                        paidDate: new Date().toISOString().split('T')[0]
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    closePaymentModal();
+                    showToast('Payment successful! Thank you.', 'success');
+                    await loadPayments();
+                } else {
+                    showModalAlert('paymentAlert', result.message || 'Payment failed', 'error');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                showModalAlert('paymentAlert', 'Payment processing error. Please try again.', 'error');
+            } finally {
+                payBtn.disabled = false;
+                payBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Payment';
+            }
+        });
+
+        // Submit complaint
+        document.getElementById('complaintForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const data = {
+                residentId: currentResident?.id || 1,
+                title: document.getElementById('complaintTitle').value,
+                category: document.getElementById('complaintCategory').value,
+                priority: document.getElementById('complaintPriority').value,
+                description: document.getElementById('complaintDescription').value,
+                status: 'PENDING',
+                complaintDate: new Date().toISOString().split('T')[0]
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/complaints`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    closeComplaintModal();
+                    showToast('Complaint submitted successfully!', 'success');
+                    await loadComplaints();
+                } else {
+                    showModalAlert('complaintAlert', result.message || 'Failed to submit complaint', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showModalAlert('complaintAlert', 'Connection error. Please try again.', 'error');
+            }
+        });
+
+        function showModalAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.textContent = message;
+            alert.className = 'alert alert-' + type;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 4000);
+        }
+
+        // Helper functions
+        function getStatusColor(status) {
+            const colors = { 'ACTIVE': 'success', 'PENDING': 'warning', 'INACTIVE': 'danger' };
+            return colors[status] || 'info';
+        }
+
+        function getPaymentStatusColor(status) {
+            const colors = { 'PAID': 'success', 'PENDING': 'warning', 'LATE': 'danger' };
+            return colors[status] || 'info';
+        }
+
+        function getComplaintStatusColor(status) {
+            const colors = { 'PENDING': 'warning', 'IN_PROGRESS': 'info', 'RESOLVED': 'success' };
+            return colors[status] || 'info';
+        }
+
+        function getPriorityColor(priority) {
+            const colors = { 'LOW': 'info', 'MEDIUM': 'warning', 'HIGH': 'danger' };
+            return colors[priority] || 'info';
+        }
+
+        // ============ ATTENDANCE FUNCTIONS ============
+        async function loadMyAttendance() {
+            if (!currentResident) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/attendance/resident/${currentResident.id}`);
+                const result = await response.json();
+                const attendanceRecords = result.data || [];
+
+                // Check today's attendance
+                const today = new Date().toISOString().split('T')[0];
+                const todayRecord = attendanceRecords.find(a => a.date === today);
+
+                const statusContainer = document.getElementById('attendanceStatus');
+                if (todayRecord) {
+                    statusContainer.innerHTML = `
+                        <div style="background: ${todayRecord.status === 'PRESENT' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}; padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">
+                                ${todayRecord.status === 'PRESENT' ? '✅' : todayRecord.status === 'ABSENT' ? '❌' : '🏖️'}
+                            </div>
+                            <div style="font-size: 18px; font-weight: 600; color: ${todayRecord.status === 'PRESENT' ? '#22c55e' : '#ef4444'};">
+                                ${todayRecord.status}
+                            </div>
+                            <div style="font-size: 13px; color: #666; margin-top: 5px;">
+                                ${todayRecord.checkInTime ? 'Checked in at ' + todayRecord.checkInTime : 'Today'}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    statusContainer.innerHTML = `
+                        <div style="background: rgba(245,158,11,0.1); padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">⏳</div>
+                            <div style="font-size: 18px; font-weight: 600; color: #f59e0b;">Not Marked</div>
+                            <div style="font-size: 13px; color: #666; margin-top: 5px;">Click "Check In" to mark attendance</div>
+                        </div>
+                    `;
+                }
+
+                // Show recent attendance history
+                const historyContainer = document.getElementById('attendanceHistory');
+                if (attendanceRecords.length > 0) {
+                    historyContainer.innerHTML = `
+                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #666;">Recent Attendance</div>
+                        ${attendanceRecords.slice(0, 5).map(a => `
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span style="color: #666;">${a.date}</span>
+                                <span class="badge badge-${a.status === 'PRESENT' ? 'success' : a.status === 'ABSENT' ? 'danger' : 'warning'}">${a.status}</span>
+                            </div>
+                        `).join('')}
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading attendance:', error);
+            }
+        }
+
+        async function markMyAttendance(status) {
+            if (!currentResident) {
+                showToast('Resident info not loaded', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/attendance/mark/${currentResident.id}?status=${status}`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Attendance marked as ' + status + '!', 'success');
+                    loadMyAttendance();
+                } else {
+                    showToast(result.message || 'Failed to mark attendance', 'error');
+                }
+            } catch (error) {
+                console.error('Error marking attendance:', error);
+                showToast('Failed to mark attendance', 'error');
+            }
+        }
+
+        // ============ FOOD PREFERENCE FUNCTIONS ============
+        async function loadMyFoodPreference() {
+            if (!currentResident) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/food/resident/${currentResident.id}/today`);
+                const result = await response.json();
+                const preference = result.data;
+
+                const container = document.getElementById('foodPreferenceStatus');
+                if (preference) {
+                    container.innerHTML = `
+                        <div style="padding: 15px;">
+                            <div style="display: flex; justify-content: space-around; margin-bottom: 15px;">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 24px;">${preference.breakfast ? '🍳' : '❌'}</div>
+                                    <div style="font-size: 12px; color: #666;">Breakfast</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 24px;">${preference.lunch ? '🍛' : '❌'}</div>
+                                    <div style="font-size: 12px; color: #666;">Lunch</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 24px;">${preference.dinner ? '🍽️' : '❌'}</div>
+                                    <div style="font-size: 12px; color: #666;">Dinner</div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; padding: 10px; background: ${preference.mealType === 'VEG' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}; border-radius: 8px;">
+                                <span style="font-weight: 600; color: ${preference.mealType === 'VEG' ? '#22c55e' : '#ef4444'};">
+                                    ${preference.mealType === 'VEG' ? '🥗 Vegetarian' : preference.mealType === 'NON_VEG' ? '🍖 Non-Vegetarian' : '🌱 Vegan'}
+                                </span>
+                            </div>
+                            ${preference.specialRequirements ? `<div style="margin-top: 10px; font-size: 12px; color: #666;"><i class="fas fa-info-circle"></i> ${preference.specialRequirements}</div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 30px; color: #666;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">🍽️</div>
+                            <p>No preference set for today</p>
+                            <p style="font-size: 12px;">Click "Update" to set your meal preferences</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading food preference:', error);
+            }
+        }
+
+        function openFoodPreferenceModal() {
+            document.getElementById('foodDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('foodModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFoodPreferenceModal() {
+            document.getElementById('foodModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('foodForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!currentResident) {
+                showToast('Resident info not loaded', 'error');
+                return;
+            }
+
+            const data = {
+                residentId: currentResident.id,
+                date: document.getElementById('foodDate').value,
+                breakfast: document.getElementById('breakfast').checked,
+                lunch: document.getElementById('lunch').checked,
+                dinner: document.getElementById('dinner').checked,
+                mealType: document.getElementById('mealType').value,
+                specialRequirements: document.getElementById('specialRequirements').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/food`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Food preference saved!', 'success');
+                    closeFoodPreferenceModal();
+                    loadMyFoodPreference();
+                } else {
+                    showToast(result.message || 'Failed to save preference', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving food preference:', error);
+                showToast('Failed to save preference', 'error');
+            }
+        });
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadResidentData();
+        }, 30000);
+
+        // Load data on page load
+        loadResidentData();
+    </script>
+</body>
+
+</html>
