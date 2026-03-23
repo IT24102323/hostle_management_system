@@ -1,74 +1,61 @@
-package com.hostel.management.controller;
+package com.hostel.management.entity;
 
-import com.hostel.management.dto.visit.VisitRequestDto;
-import com.hostel.management.dto.visit.VisitResponseDto;
 import com.hostel.management.enums.VisitStatus;
-import com.hostel.management.response.ApiResponse;
-import com.hostel.management.service.VisitService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@RestController
-@RequestMapping("/api/visits")
-public class VisitController {
+@Entity
+@Table(name = "visits")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Visit {
 
-    private final VisitService visitService;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public VisitController(VisitService visitService) {
-        this.visitService = visitService;
+    @Column(nullable = false)
+    private String visitorName;
+
+    private String visitorContact;
+    private String visitorEmail;
+
+    /** Preferred room type requested */
+    private String preferredRoomType;
+
+    @Column(length = 1000)
+    private String message;
+
+    private LocalDate visitDate;
+    private String visitTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VisitStatus status = VisitStatus.NEW;
+
+    private String adminNotes;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        if (status == null) status = VisitStatus.NEW;
+        if (visitDate == null) visitDate = LocalDate.now();
     }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<VisitResponseDto>> createVisit(
-            @Valid @RequestBody VisitRequestDto requestDto) {
-        VisitResponseDto visit = visitService.createVisit(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Visit request submitted.", visit));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<VisitResponseDto>> updateVisit(
-            @PathVariable Long id,
-            @RequestBody VisitRequestDto requestDto) {
-        return ResponseEntity.ok(ApiResponse.success("Visit updated.",
-                visitService.updateVisit(id, requestDto)));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> deleteVisit(@PathVariable Long id) {
-        visitService.deleteVisit(id);
-        return ResponseEntity.ok(ApiResponse.success("Visit deleted."));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<VisitResponseDto>> getVisitById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success("Visit retrieved.",
-                visitService.getVisitById(id)));
-    }
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<VisitResponseDto>>> getAllVisits(
-            @RequestParam(required = false) VisitStatus status) {
-        return ResponseEntity.ok(ApiResponse.success("Visits retrieved.",
-                visitService.getAllVisits(status)));
-    }
-
-    @PutMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<VisitResponseDto>> updateStatus(
-            @PathVariable Long id,
-            @RequestParam VisitStatus status,
-            @RequestParam(required = false) String adminNotes) {
-        return ResponseEntity.ok(ApiResponse.success("Visit status updated.",
-                visitService.updateStatus(id, status, adminNotes)));
-    }
-
-    @GetMapping("/stats")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getVisitStats() {
-        return ResponseEntity.ok(ApiResponse.success("Visit stats retrieved.", visitService.getVisitStats()));
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
